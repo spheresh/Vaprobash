@@ -21,10 +21,10 @@ else
     public_folder="$2"
 fi
 
-if [[ -z $4 ]]; then
+if [[ -z $5 ]]; then
     github_url="https://raw.githubusercontent.com/fideloper/Vaprobash/master"
 else
-    github_url="$4"
+    github_url="$5"
 fi
 
 # Add repo for latest FULL stable Apache
@@ -56,7 +56,7 @@ sudo chmod guo+x vhost
 sudo mv vhost /usr/local/bin
 
 # Create a virtualhost to start, with SSL certificate
-sudo vhost -s $1.xip.io -d $public_folder -p /etc/ssl/xip.io -c xip.io -a $3
+sudo vhost -s $1.xip.io -d $public_folder -p /etc/ssl/xip.io -c xip.io -a $3 -u $4
 sudo a2dissite 000-default
 
 # If PHP is installed or HHVM is installed, proxy PHP requests to it

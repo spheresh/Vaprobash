@@ -14,6 +14,7 @@ Assumes /etc/apache2/sites-available and /etc/apache2/sites-enabled setup used
 
     -d    DocumentRoot - i.e. /var/www/yoursite
     -h    Help - Show this menu.
+    -u    User - i.e. vagrant 
     -s    ServerName - i.e. example.com or sub.example.com
     -a    ServerAlias - i.e. *.example.com or another domain altogether
     -p    File path to the SSL certificate. Directories only, no file name.
@@ -21,7 +22,7 @@ Assumes /etc/apache2/sites-available and /etc/apache2/sites-enabled setup used
           This *ASSUMES* a .crt and a .key file exists
             at file path /provided-file-path/your-server-or-cert-name.[crt|key].
           Otherwise you can except Apache errors when you reload Apache.
-          Ensure Apache's mod_ssl is enabled via "sudo a2enmod ssl".
+          Ensure Apache\'s mod_ssl is enabled via "sudo a2enmod ssl".
     -c    Certificate filename. "xip.io" becomes "xip.io.key" and "xip.io.crt".
 
     Example Usage. Serve files from /var/www/xip.io at http(s)://192.168.33.10.xip.io
@@ -127,7 +128,7 @@ fi
 CertPath=""
 
 #Parse flags
-while getopts "d:s:a:p:c:h" OPTION; do
+while getopts "d:s:a:p:c:u:h" OPTION; do
     case $OPTION in
         h)
             show_usage
@@ -146,6 +147,9 @@ while getopts "d:s:a:p:c:h" OPTION; do
             ;;
         c)
             CertName=$OPTARG
+            ;;
+        u)
+            User=$OPTARG
             ;;
         *)
             show_usage
@@ -167,7 +171,11 @@ fi
 
 if [ ! -d $DocumentRoot ]; then
     mkdir -p $DocumentRoot
-    #chown USER:USER $DocumentRoot #POSSIBLE IMPLEMENTATION, new flag -u ?
+fi
+
+# If user is set:
+if [ "$User" != "" ]; then
+    chown -R $User:$User $DocumentRoot
 fi
 
 if [ -f "$DocumentRoot/$ServerName.conf" ]; then
