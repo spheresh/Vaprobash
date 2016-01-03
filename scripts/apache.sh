@@ -21,6 +21,8 @@ else
     public_folder="$2"
 fi
 
+mkdir -p $public_folder
+
 if [[ -z $5 ]]; then
     github_url="https://raw.githubusercontent.com/fideloper/Vaprobash/master"
 else
@@ -43,7 +45,7 @@ sudo apt-get install -qq apache2
 echo ">>> Configuring Apache"
 
 # Add vagrant user to www-data group
-sudo usermod -a -G www-data vagrant
+sudo usermod -a -G www-data $4
 
 # Apache Config
 # On separate lines since some may cause an error
@@ -56,18 +58,18 @@ sudo chmod guo+x vhost
 sudo mv vhost /usr/local/bin
 
 # Create a virtualhost to start, with SSL certificate
-sudo vhost -s $1.xip.io -d $public_folder -p /etc/ssl/xip.io -c xip.io -a $3 -u $4
-sudo a2dissite 000-default
+#sudo vhost -s $1.xip.io -d $public_folder -p /etc/ssl/xip.io -c xip.io -a $3 -u $4
+#sudo a2dissite 000-default
 
 # If PHP is installed or HHVM is installed, proxy PHP requests to it
-if [[ $PHP_IS_INSTALLED -eq 0 || $HHVM_IS_INSTALLED -eq 0 ]]; then
-
-    # PHP Config for Apache
-    sudo a2enmod proxy_fcgi
-else
-    # vHost script assumes ProxyPassMatch to PHP
-    # If PHP is not installed, we'll comment it out
-    sudo sed -i "s@ProxyPassMatch@#ProxyPassMatch@" /etc/apache2/sites-available/$1.xip.io.conf
-fi
+# if [[ $PHP_IS_INSTALLED -eq 0 || $HHVM_IS_INSTALLED -eq 0 ]]; then
+# 
+#     # PHP Config for Apache
+#     sudo a2enmod proxy_fcgi
+# else
+#     # vHost script assumes ProxyPassMatch to PHP
+#     # If PHP is not installed, we'll comment it out
+#     sudo sed -i "s@ProxyPassMatch@#ProxyPassMatch@" /etc/apache2/sites-available/$1.xip.io.conf
+# fi
 
 sudo service apache2 restart
